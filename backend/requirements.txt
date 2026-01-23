@@ -5,3 +5,12 @@ python-dotenv
 pydantic-settings
 sqlalchemy
 psycopg
+alembic
+python-multipart
+pillow
+pytesseract
+openai
+yt-dlp
+requests
+openai-whisper
+ffmpeg-python

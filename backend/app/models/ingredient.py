@@ -7,4 +7,8 @@ class Ingredient(Base):
     id = Column(Integer,  primary_key=True, index=True)
     name = Column(String, index=True)
     amount = Column (Integer)
-    recipe_id = Column(Integer, ForeignKey("recipes.id"))
+    recipe_id = Column(
+        Integer, 
+        ForeignKey("recipes.id", ondelete="CASCADE"),
+        nullable=False,
+    )
