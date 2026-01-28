@@ -2,12 +2,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { api } from '@/services/api';
 import * as ImagePicker from 'expo-image-picker';
+import { RelativePathString, useRouter } from 'expo-router';
 import { useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 export default function ImportRecipeScreen() {
     const [youtubeUrl, setYouTubeUrl] = useState("");
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const pickImageAndUpload = async () => {
         try {
@@ -40,6 +42,7 @@ export default function ImportRecipeScreen() {
 
                     Alert.alert("Success", "Recipe imported from image!");
                     console.log(data);
+                    router.push(`/recipe/${data.id}` as RelativePathString)
                 }
                 catch (err: any) {
                     Alert.alert("Error", err.message || "Failed to import image");
@@ -68,9 +71,10 @@ export default function ImportRecipeScreen() {
             });
             Alert.alert("Success", "Recipe imported from YouTube!");
             console.log(res.data);
+            router.push(`/recipe/${res.data.id}` as RelativePathString)
         }
         catch (err: any) {
-            Alert.alert("Error", err.message || "Failed to import image");
+            Alert.alert("Error", err.message || "Failed to import from YouTube");
         }
         finally {
             setLoading(false);

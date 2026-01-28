@@ -21,4 +21,6 @@ class Recipe(Base):
 
     # computed property (IMPORTANT)
     def steps_list(self) -> list[str]:
+        if not self.steps:
+            return []
         return [s.strip() for s in self.steps.split("\n") if s.strip()]
