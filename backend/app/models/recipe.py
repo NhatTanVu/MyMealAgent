@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
@@ -11,3 +12,13 @@ class Recipe(Base):
     cook_time = Column(Integer)  # minutes
     servings = Column(Integer)
     steps = Column(Text)
+
+    ingredients = relationship(
+        "Ingredient",
+        backref="recipe",
+        cascade="all, delete-orphan"
+    )
+
+    # computed property (IMPORTANT)
+    def steps_list(self) -> list[str]:
+        return [s.strip() for s in self.steps.split("\n") if s.strip()]
