@@ -1,10 +1,10 @@
-from typing import Optional
+from typing import List, Optional
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.models.ingredient import Ingredient
 from app.models.recipe import Recipe
-from app.schemas.recipe import RecipeCreate, RecipeResponse
+from app.schemas.recipe import RecipeCreate, RecipeDetail, RecipeListItem, RecipeResponse
 from app.services.audio_chunker import chunk_audio
 from app.services.ocr import extract_text_from_image
 from app.services.recipe_parser import parse_recipe_from_text
@@ -12,6 +12,40 @@ from app.services.transcription_online_chunked import transcribe
 from app.services.youtube_audio import download_youtube_audio
 
 router = APIRouter()
+
+
+@router.get("/", response_model=List[RecipeListItem])
+def get_recipes(db: Session = Depends(get_db)):
+    """
+    Return all recipes
+    """
+    recipes = db.query(Recipe).order_by(Recipe.id.desc()).all()
+    return recipes
+
+
+def build_recipe_detail(recipe: Recipe) -> RecipeDetail:
+    return RecipeDetail(
+        id=recipe.id,
+        title=recipe.title,
+        ingredients=[i.name for i in recipe.ingredients],
+        steps=recipe.steps_list(),
+    )
+
+
+@router.get("/{id}", response_model=RecipeDetail)
+def get_recipe(id: int, db: Session = Depends(get_db)):
+    """
+    Return a single recipe by ID.
+    """
+    recipe = db.query(Recipe).filter(Recipe.id == id).first()
+
+    if not recipe:
+        raise HTTPException(
+            status_code=404,
+            detail="Recipe not found"
+        )
+
+    return build_recipe_detail(recipe)
 
 
 @router.post("/import", response_model=RecipeResponse)

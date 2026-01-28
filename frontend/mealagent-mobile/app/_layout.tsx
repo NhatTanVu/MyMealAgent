@@ -17,6 +17,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="index" options={{ title: "Meal Agent" }} />
         <Stack.Screen name="import/index" options={{ title: "Import Recipe" }} />
+        <Stack.Screen name="recipes/index" options={{ title: "Recipes" }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />

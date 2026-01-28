@@ -30,3 +30,21 @@ class RecipeResponse(BaseModel):
     cook_time: int
     servings: int
     source_url: Optional[str]
+
+
+class RecipeListItem(BaseModel):
+    id: int
+    title: str
+
+    class Config:
+        from_attributes = True
+
+
+class RecipeDetail(BaseModel):
+    id: int
+    title: str
+    ingredients: List[str]
+    steps: List[str]
+
+    class Config:
+        from_attributes = True

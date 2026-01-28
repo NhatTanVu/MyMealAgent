@@ -17,6 +17,14 @@ export default function HomeScreen() {
                     <ThemedText style={styles.buttonText}>Import a Recipe</ThemedText>
                 </Pressable>
             </Link>
+
+            {/* Link to /recipes */}
+            <Link href="/recipes" asChild>
+                <Pressable style={styles.button}>
+                    <ThemedText style={styles.buttonText}>View all Recipes</ThemedText>
+                </Pressable>
+            </Link>
+
         </ThemedView>
     )
 }
@@ -43,6 +51,7 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         paddingHorizontal: 24,
         borderRadius: 8,
+        marginBottom: 14
     },
     buttonText: {
         color: "#fff",
