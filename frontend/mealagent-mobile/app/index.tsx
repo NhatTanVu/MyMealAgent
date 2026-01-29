@@ -25,6 +25,11 @@ export default function HomeScreen() {
                 </Pressable>
             </Link>
 
+            <Link href="/plan/step1" asChild>
+                <Pressable style={styles.button}>
+                    <ThemedText style={styles.buttonText}>Smart Plan Wizard</ThemedText>
+                </Pressable>
+            </Link>
         </ThemedView>
     )
 }
