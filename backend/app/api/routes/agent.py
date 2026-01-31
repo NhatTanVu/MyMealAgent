@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends
+from re import S
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.agent.run import run_agent
 from app.api.deps import get_db
 from app.models.recipe import Recipe
-from app.schemas.agent import AgentRequest, AgentResponse, PlanCandidate, PlanRequest, PlanResponse
+from app.schemas.agent import IngredientOutput, RunRequest, RunResponse, PlanCandidate, PlanRequest, PlanResponse
 
 router = APIRouter()
 
@@ -102,11 +102,63 @@ async def plan_recipes(payload: PlanRequest, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/run", response_model=AgentResponse)
-async def run_meal_agent(payload: AgentRequest):
-    """
-    Main agent endpoint:
-    Observe → Plan → Act → Adapt
-    """
-    result = await run_agent(payload)
-    return result
+@router.post("/run", response_model=RunResponse)
+async def run_meal_agent(payload: RunRequest, db: Session = Depends(get_db)):
+    user_ingredients = {
+        i.name.lower(): i for i in payload.ingredients
+    }
+    recipe = db.query(Recipe).filter(Recipe.id == payload.recipe_id).first()
+
+    if not recipe:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+
+    ingredients_have = []
+    ingredients_missing = []
+
+    for ing in recipe.ingredients:
+        name = ing.name.lower()
+        user_ing = user_ingredients.get(name)
+        if not user_ing:
+            ingredients_missing.append(IngredientOutput(
+                name=ing.name,
+                amount=ing.amount,
+                unit=ing.unit,
+                raw=ing.raw
+            ))
+            continue
+
+        if (
+            ing.amount is not None
+            and user_ing.amount is not None
+            and ing.unit is not None
+            and user_ing.unit is not None
+        ):
+            if ing.unit == user_ing.unit and user_ing.amount < ing.amount:
+                ingredients_missing.append(IngredientOutput(
+                    name=ing.name,
+                    amount=ing.amount,
+                    unit=ing.unit,
+                    raw=ing.raw
+                ))
+                continue
+
+        ingredients_have.append(IngredientOutput(
+            name=ing.name,
+            amount=ing.amount,
+            unit=ing.unit,
+            raw=ing.raw
+        ))
+
+    steps = [
+        s.strip()
+        for s in recipe.steps.split("\n")
+        if s.strip()
+    ]
+
+    return RunResponse(
+        recipe_id=recipe.id,
+        title=recipe.title,
+        ingredients_missing=ingredients_missing,
+        ingredients_have=ingredients_have,
+        steps=steps
+    )

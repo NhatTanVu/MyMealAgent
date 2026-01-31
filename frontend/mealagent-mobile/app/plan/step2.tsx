@@ -10,18 +10,20 @@ export default function PlanStep2() {
     const { inputs, candidates, setCandidates, setResult } = usePlanWizard();
     const [loading, setLoading] = useState(true);
     const router = useRouter();
-    const choose = (id: number, title: string) => {
+    const choose = async (id: number, _: string) => {
         setLoading(true);
         try {
-            // ✅ Replace with real backend compute later:
-            // POST /agent/run -> returns grocery + steps
-            // For now, create a demo result:
+            const res = await api.post("/agent/run", {
+                recipe_id: id,
+                ingredients: inputs.ingredients
+            });
+            const data = await res.data;
             setResult({
-                recipeId: id,
-                title,
-                ingredientsHave: inputs.ingredients,
-                ingredientsMissing: ["salt", "garlic"],
-                steps: ["Prep ingredients", "Cook main protein", "Add veggies", "Serve"]
+                recipeId: data.id,
+                title: data.title,
+                ingredientsHave: (data.ingredients_have as []).map((ing) => ing["raw"]),
+                ingredientsMissing: (data.ingredients_missing as []).map((ing) => ing["raw"]),
+                steps: data.steps
             });
             router.push("/plan/step3");
         }
@@ -33,7 +35,10 @@ export default function PlanStep2() {
     useEffect(() => {
         const loadCandidates = async () => {
             setLoading(true);
-            const res = await api.post("/agent/plan", inputs);
+            const res = await api.post("/agent/plan", {
+                ...inputs,
+                time_available: inputs.timeAvailable
+            });
             const data = await res.data["candidates"] as [];
 
             try {

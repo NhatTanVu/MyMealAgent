@@ -2,7 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { usePlanWizard } from "@/context/planWizard";
 import { useRouter } from "expo-router";
-import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet } from "react-native";
 
 
 export default function PlanStep3() {
@@ -25,9 +25,13 @@ export default function PlanStep3() {
             {result?.ingredientsMissing.length === 0 ? (
                 <ThemedText>Nothing! You have enverything 🎉</ThemedText>
             ) : (
-                result?.ingredientsMissing.map((value, i) => (
-                    <ThemedText key={i}>• {value}</ThemedText>
-                ))
+                <ScrollView>
+                    {
+                        result?.ingredientsMissing.map((value, i) => (
+                            <ThemedText key={i}>• {value}</ThemedText>
+                        ))
+                    }
+                </ScrollView>
             )}
 
             <Pressable onPress={() => router.push("/plan/step4")} style={styles.primaryBtn}>

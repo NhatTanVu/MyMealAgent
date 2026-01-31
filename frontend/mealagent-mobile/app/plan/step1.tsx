@@ -66,6 +66,9 @@ export default function PlanStep1() {
             <ThemedText style={styles.label}>Servings</ThemedText>
             <TextInput value={servingsText} onChangeText={setServingsText} keyboardType="number-pad" style={styles.inputFull} />
 
+            <Pressable onPress={() => router.push("/")} style={styles.secondaryBtn}>
+                <ThemedText style={styles.secondaryBtnText}>Back</ThemedText>
+            </Pressable>
             <Pressable onPress={next} style={styles.primaryBtn}>
                 <ThemedText style={styles.primaryBtnText}>Next</ThemedText>
             </Pressable>
@@ -107,5 +110,11 @@ const styles = StyleSheet.create({
     primaryBtn: {
         marginTop: 12, backgroundColor: "#2E7D32", padding: 14, borderRadius: 10, alignItems: "center"
     },
-    primaryBtnText: { color: "#fff", fontWeight: "700" }
+    primaryBtnText: { color: "#fff", fontWeight: "700" },
+    secondaryBtn: {
+        marginTop: 10, padding: 14, borderRadius: 10, alignItems: "center", borderWidth: 1, borderColor: "#ccc"
+    },
+    secondaryBtnText: {
+        fontWeight: "700"
+    },
 });

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Float, Integer, String, ForeignKey
 from app.db.base import Base
 
 class Ingredient(Base):
@@ -7,7 +7,7 @@ class Ingredient(Base):
     id = Column(Integer,  primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
     raw = Column(String, nullable=False)
-    amount = Column (Integer, nullable=True)
+    amount = Column (Float, nullable=True)
     unit = Column(String, nullable=True)
     recipe_id = Column(
         Integer, 
