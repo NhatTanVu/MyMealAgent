@@ -3,18 +3,20 @@ import { ThemedView } from "@/components/themed-view";
 import { usePlanWizard } from "@/context/planWizard";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, StyleSheet, TextInput } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput } from "react-native";
 
 export default function PlanStep1() {
     const [ingredientText, setIngredientText] = useState("");
     const addIngredient = () => {
         const v = ingredientText.trim();
         if (!v) return;
-        setInputs({ ...inputs, ingredients: [...inputs.ingredients, {
-            name: v.toLowerCase(),
-            amount: 0,
-            unit: ""
-        }] });
+        setInputs({
+            ...inputs, ingredients: [...inputs.ingredients, {
+                name: v.toLowerCase(),
+                amount: 0,
+                unit: ""
+            }]
+        });
         setIngredientText("");
     };
     const { inputs, setInputs } = usePlanWizard();
@@ -33,46 +35,54 @@ export default function PlanStep1() {
     }
 
     return (
-        <ThemedView style={styles.container}>
-            <ThemedText style={styles.h1}>What's in your fridge?</ThemedText>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+            <ThemedView style={{ flex: 1, padding: 20 }}>
+                <ScrollView keyboardShouldPersistTaps="handled">
+                    <ThemedText style={styles.h1}>What's in your fridge?</ThemedText>
 
-            <ThemedView style={styles.row}>
-                <TextInput
-                    value={ingredientText}
-                    onChangeText={setIngredientText}
-                    placeholder="e.g. chicken"
-                    style={styles.input}
-                    autoCapitalize="none"
-                    onSubmitEditing={addIngredient}
-                />
-                <Pressable onPress={addIngredient} style={styles.addBtn}>
-                    <ThemedText style={styles.addBtnText}>Add</ThemedText>
+                    <ThemedView style={styles.row}>
+                        <TextInput
+                            value={ingredientText}
+                            onChangeText={setIngredientText}
+                            placeholder="e.g. chicken"
+                            style={styles.input}
+                            autoCapitalize="none"
+                            onSubmitEditing={addIngredient}
+                        />
+                        <Pressable onPress={addIngredient} style={styles.addBtn}>
+                            <ThemedText style={styles.addBtnText}>Add</ThemedText>
+                        </Pressable>
+                    </ThemedView>
+
+                    <ThemedView style={styles.chips}>
+                        {
+                            inputs.ingredients.map((ing, idx) => (
+                                <Pressable key={`${ing.name}-${idx}`} onPress={() => removeIngredient(idx)} style={styles.chip}>
+                                    <ThemedText>{ing.name} ✕</ThemedText>
+                                </Pressable>
+                            ))
+                        }
+                    </ThemedView>
+
+                    <ThemedText style={styles.label}>Time available (minutes)</ThemedText>
+                    <TextInput value={timeText} onChangeText={setTimeText} keyboardType="number-pad" style={styles.inputFull} />
+
+                    <ThemedText style={styles.label}>Servings</ThemedText>
+                    <TextInput value={servingsText} onChangeText={setServingsText} keyboardType="number-pad" style={styles.inputFull} />
+                </ScrollView>
+            </ThemedView>
+            <ThemedView style={{ marginBottom: Platform.OS !== "web" ? 100 : 0, padding: 20 }}>
+                <Pressable onPress={() => router.push("/")} style={styles.secondaryBtn}>
+                    <ThemedText style={styles.secondaryBtnText}>Back</ThemedText>
+                </Pressable>
+                <Pressable onPress={next} style={styles.primaryBtn}>
+                    <ThemedText style={styles.primaryBtnText}>Next</ThemedText>
                 </Pressable>
             </ThemedView>
-
-            <ThemedView style={styles.chips}>
-                {
-                    inputs.ingredients.map((ing, idx) => (
-                        <Pressable key={`${ing.name}-${idx}`} onPress={() => removeIngredient(idx)} style={styles.chip}>
-                            <ThemedText>{ing.name} ✕</ThemedText>
-                        </Pressable>
-                    ))
-                }
-            </ThemedView>
-
-            <ThemedText style={styles.label}>Time available (minutes)</ThemedText>
-            <TextInput value={timeText} onChangeText={setTimeText} keyboardType="number-pad" style={styles.inputFull} />
-
-            <ThemedText style={styles.label}>Servings</ThemedText>
-            <TextInput value={servingsText} onChangeText={setServingsText} keyboardType="number-pad" style={styles.inputFull} />
-
-            <Pressable onPress={() => router.push("/")} style={styles.secondaryBtn}>
-                <ThemedText style={styles.secondaryBtnText}>Back</ThemedText>
-            </Pressable>
-            <Pressable onPress={next} style={styles.primaryBtn}>
-                <ThemedText style={styles.primaryBtnText}>Next</ThemedText>
-            </Pressable>
-        </ThemedView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -84,19 +94,19 @@ const styles = StyleSheet.create({
         fontSize: 22, fontWeight: "700"
     },
     row: {
-        flexDirection: "row", gap: 10, alignItems: "center"
+        flexDirection: "row", gap: 10, alignItems: "center",
     },
     input: {
         flex: 1, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 12
     },
-    addBtn: { 
-        backgroundColor: "#1565C0", paddingVertical: 12, paddingHorizontal: 14, borderRadius: 8 
+    addBtn: {
+        backgroundColor: "#1565C0", paddingVertical: 12, paddingHorizontal: 14, borderRadius: 8
     },
     addBtnText: {
         color: "#fff", fontWeight: "600"
     },
     chips: {
-        flexDirection: "row", flexWrap: "wrap", gap: 8
+        flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 8
     },
     chip: {
         backgroundColor: "#f2f2f2", paddingVertical: 8, paddingHorizontal: 10, borderRadius: 999

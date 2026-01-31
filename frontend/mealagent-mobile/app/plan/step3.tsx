@@ -25,7 +25,7 @@ export default function PlanStep3() {
             {result?.ingredientsMissing.length === 0 ? (
                 <ThemedText>Nothing! You have enverything 🎉</ThemedText>
             ) : (
-                <ScrollView>
+                <ScrollView style={{ flex: 1 }}>
                     {
                         result?.ingredientsMissing.map((value, i) => (
                             <ThemedText key={i}>• {value}</ThemedText>
