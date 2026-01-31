@@ -4,7 +4,7 @@ import { usePlanWizard } from "@/context/planWizard";
 import { api } from "@/services/api";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet } from "react-native";
 
 export default function PlanStep2() {
     const { inputs, candidates, setCandidates, setResult } = usePlanWizard();
@@ -67,14 +67,14 @@ export default function PlanStep2() {
     return (
         <ThemedView style={styles.container}>
             <ThemedText style={styles.h1}>Pick a recipe</ThemedText>
-            {
-                candidates.map((c) => (
+            <ScrollView style={{ flex: 1 }}>
+                {candidates.map((c) => (
                     <Pressable key={c.id} style={styles.card} onPress={() => choose(c.id, c.title)}>
                         <ThemedText style={styles.title}>{c.title}</ThemedText>
                         <ThemedText style={styles.reason}>{c.scoreReason}</ThemedText>
                     </Pressable>
-                ))
-            }
+                ))}
+            </ScrollView>
             <Pressable onPress={() => router.push("/plan/step1")} style={styles.secondaryBtn}>
                 <ThemedText style={styles.secondaryBtnText}>Back</ThemedText>
             </Pressable>
