@@ -4,8 +4,10 @@ import { usePlanWizard } from "@/context/planWizard";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function PlanStep1() {
+    const insets = useSafeAreaInsets();
     const [ingredientText, setIngredientText] = useState("");
     const addIngredient = () => {
         const v = ingredientText.trim();
@@ -33,6 +35,8 @@ export default function PlanStep1() {
         setInputs({ ...inputs, timeAvailable, servings });
         router.push("/plan/step2");
     }
+
+    console.log(`insets.bottom=${insets.bottom}`)
 
     return (
         <KeyboardAvoidingView
@@ -74,7 +78,7 @@ export default function PlanStep1() {
                     <TextInput value={servingsText} onChangeText={setServingsText} keyboardType="number-pad" style={styles.inputFull} />
                 </ScrollView>
             </ThemedView>
-            <ThemedView style={{ marginBottom: Platform.OS !== "web" ? 100 : 0, padding: 20 }}>
+            <ThemedView style={{ marginBottom: Platform.OS !== "web" ? (insets.bottom + 60) : 0, padding: 20 }}>
                 <Pressable onPress={() => router.push("/")} style={styles.secondaryBtn}>
                     <ThemedText style={styles.secondaryBtnText}>Back</ThemedText>
                 </Pressable>
