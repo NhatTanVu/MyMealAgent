@@ -77,4 +77,3 @@ jobs:
         with:
           app-name: 'meal-agent-backend'
           slot-name: 'Production'
-          package: backend
