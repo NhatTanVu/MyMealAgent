@@ -12,5 +12,4 @@ pytesseract
 openai
 yt-dlp
 requests
-openai-whisper
 ffmpeg-python
