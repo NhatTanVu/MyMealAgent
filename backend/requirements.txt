@@ -4,7 +4,7 @@ pydantic
 python-dotenv
 pydantic-settings
 sqlalchemy
-psycopg
+psycopg[binary]==3.*
 alembic
 python-multipart
 pillow
