@@ -6,7 +6,7 @@ import { Pressable, StyleSheet } from "react-native";
 export default function HomeScreen() {
     return (
         <ThemedView style={styles.container}>
-            <ThemedText style={styles.title}>🍳 Meal Agent</ThemedText>
+            <ThemedText style={styles.title}>🍳 My Meal Agent</ThemedText>
             <ThemedText style={styles.subtitle}>
                 Your AI-powered cooking assistant
             </ThemedText>
@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: "bold",
+        lineHeight: 34, // fontSize * 1.2
         marginBottom: 8,
     },
     subtitle: {

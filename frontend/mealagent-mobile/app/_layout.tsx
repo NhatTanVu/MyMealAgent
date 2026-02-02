@@ -17,7 +17,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Screen name="index" options={{ title: "Meal Agent" }} />
+          <Stack.Screen name="index" options={{ title: "My Meal Agent", headerShown: false }} />
           <Stack.Screen name="import/index" options={{ title: "Import Recipe" }} />
           <Stack.Screen name="recipes/index" options={{ title: "Recipes" }} />
           <Stack.Screen name="plan" options={{ title: "Plan", headerShown: false }} />

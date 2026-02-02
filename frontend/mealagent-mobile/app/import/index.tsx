@@ -120,11 +120,11 @@ export default function ImportRecipeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 24,
-        justifyContent: "center",
+        padding: 24
     },
     title: {
         fontSize: 26,
+        lineHeight: 32, // fontSize * 1.2
         fontWeight: "bold",
         marginBottom: 24,
         textAlign: "center"
