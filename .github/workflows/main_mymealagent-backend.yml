@@ -31,6 +31,7 @@ jobs:
           
       - name: Build and push Docker image
         run: |
+          cd backend
           docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.IMAGE_NAME }}:latest .
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.IMAGE_NAME }}:latest
 
@@ -38,4 +39,4 @@ jobs:
         run: |
           az webapp restart \
             --name ${{ secrets.WEBAPP_NAME }} \
-            --resource-group my-rg
+            --resource-group ${{ secrets.RG_NAME }}
