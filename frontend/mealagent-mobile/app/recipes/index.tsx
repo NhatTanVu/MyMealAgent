@@ -21,7 +21,7 @@ export default function RecipeListScreen() {
     const router = useRouter();
 
     useEffect(() => {
-        api.get("/recipes")
+        api.get("/recipes/")
             .then((res) => setRecipes(res.data))
             .finally(() => setLoading(false));
     }, []);
