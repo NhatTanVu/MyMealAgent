@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     environment: str = "development"
 
     openai_api_key: str | None = None
+    ytdlp_cookies: str | None = None
     database_url: str
     admin_database_url: str
 

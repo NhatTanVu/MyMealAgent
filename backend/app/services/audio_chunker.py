@@ -38,11 +38,11 @@ def chunk_audio(
         check=True,
     )
 
-    chunks = [
+    chunks = sorted([
         os.path.join(output_dir, f)
         for f in os.listdir(output_dir)
         if f.endswith(".mp3")
-    ]
+    ])
 
     if not chunks:
         raise RuntimeError("Audio chunking failed: no chunks created")
