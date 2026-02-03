@@ -67,7 +67,7 @@ export default function PlanStep2() {
     return (
         <ThemedView style={styles.container}>
             <ThemedText style={styles.h1}>Pick a recipe</ThemedText>
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 10 }}>
                 {candidates.map((c) => (
                     <Pressable key={c.id} style={styles.card} onPress={() => choose(c.id, c.title)}>
                         <ThemedText style={styles.title}>{c.title}</ThemedText>
