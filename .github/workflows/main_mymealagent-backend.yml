@@ -37,14 +37,11 @@ jobs:
           docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.WORKER_IMAGE_NAME }}:latest .
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.WORKER_IMAGE_NAME }}:latest  
 
-      - name: Pull and push Redis image
-        run: |
-          docker pull redis:7-alpine
-          docker tag redis:7-alpine ${{ secrets.ACR_NAME }}.azurecr.io/redis:7-alpine
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/redis:7-alpine
-
-      - name: Restart App Service
+      - name: Restart services
         run: |
           az webapp restart \
             --name ${{ secrets.WEBAPP_NAME }} \
+            --resource-group ${{ secrets.RG_NAME }}
+          az webapp restart \
+            --name ${{ secrets.WORKERAPP_NAME }} \
             --resource-group ${{ secrets.RG_NAME }}
