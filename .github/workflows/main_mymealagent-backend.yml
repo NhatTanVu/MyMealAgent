@@ -25,11 +25,23 @@ jobs:
         run: |
           az acr login --name ${{ secrets.ACR_NAME }}
           
-      - name: Build and push Docker image
+      - name: Build and push web api image
         run: |
           cd backend
           docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.IMAGE_NAME }}:latest .
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.IMAGE_NAME }}:latest
+
+      - name: Build and push Celery worker image
+        run: |
+          cd backend
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.WORKER_IMAGE_NAME }}:latest .
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.WORKER_IMAGE_NAME }}:latest  
+
+      - name: Pull and push Redis image
+        run: |
+          docker pull redis:7-alpine
+          docker tag redis:7-alpine ${{ secrets.ACR_NAME }}.azurecr.io/redis:7-alpine
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/redis:7-alpine
 
       - name: Restart App Service
         run: |
