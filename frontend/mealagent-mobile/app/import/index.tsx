@@ -2,14 +2,17 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { api } from '@/services/api';
 import * as ImagePicker from 'expo-image-picker';
-import { RelativePathString, useRouter } from 'expo-router';
-import { useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import ImportNotice from './import-notice';
 
 export default function ImportRecipeScreen() {
     const [youtubeUrl, setYouTubeUrl] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const [focused, setFocused] = useState(false);
+    const [importId, setImportId] = useState("");
 
     const pickImageAndUpload = async () => {
         try {
@@ -37,17 +40,14 @@ export default function ImportRecipeScreen() {
 
                 try {
                     setLoading(true);
-                    const res = await api.post("/recipes/import", formData);
-                    const data = await res.data;
+                    setFocused(true);
+                    const res = await api.post("/recipes/imports", formData);
 
-                    Alert.alert("Success", "Recipe imported from image!");
-                    console.log(data);
-                    router.push(`/recipe/${data.id}` as RelativePathString)
+                    const data = await res.data["import_id"];
+                    setImportId(data);
                 }
                 catch (err: any) {
                     Alert.alert("Error", err.message || "Failed to import image");
-                }
-                finally {
                     setLoading(false);
                 }
             }
@@ -56,7 +56,7 @@ export default function ImportRecipeScreen() {
         }
     };
 
-    const submitYouTubeUrl = async () => {
+    const submitVideoUrl = async () => {
         if (!youtubeUrl.trim()) {
             Alert.alert("Error", "Please enter a YouTube URL");
             return;
@@ -64,56 +64,98 @@ export default function ImportRecipeScreen() {
 
         try {
             setLoading(true);
+            setFocused(true);
             const formData = new FormData();
             formData.append("source_url", youtubeUrl.trim());
-            const res = await api.post("/recipes/import", formData, {
+            const res = await api.post("/recipes/imports", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            Alert.alert("Success", "Recipe imported from YouTube!");
-            console.log(res.data);
-            router.push(`/recipe/${res.data.id}` as RelativePathString)
+
+            const data = await res.data["import_id"];
+            setImportId(data);
         }
         catch (err: any) {
             Alert.alert("Error", err.message || "Failed to import from YouTube");
-        }
-        finally {
             setLoading(false);
         }
     };
 
+    useEffect(() => {
+        if (importId != "") {
+            debugger;
+            const poll = setInterval(async () => {
+                try {
+                    const res = await api.get(`/recipes/imports/${importId}/status`);
+                    const data = await res.data;
+
+                    if (data["status"] === "completed") {
+                        clearInterval(poll);
+                        Alert.alert("Success", "Recipe imported!");
+                        const recipe_id = data["recipe"]["id"]
+                        router.push(`/recipe/${recipe_id}`)
+                        setLoading(false);
+                    } else if (data["status"] === "failed") {
+                        clearInterval(poll);
+                        Alert.alert("Error", data["error"] || "Failed to import");
+                        setLoading(false);
+                    }
+                }
+                catch (err: any) {
+                    Alert.alert("Error", err.message || "Failed to import");
+                    setLoading(false);
+                }
+            }, 2000);
+        }
+    }, [importId]);
+
     return (
-        <ThemedView style={styles.container}>
-            <ThemedText style={styles.title}>🍳 Import a Recipe</ThemedText>
-            {/* Image upload */}
-            <TouchableOpacity style={styles.button} onPress={pickImageAndUpload}>
-                <ThemedText style={styles.buttonText}>Upload Recipe Image</ThemedText>
-            </TouchableOpacity>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+            <ScrollView keyboardShouldPersistTaps="handled">
+                <ThemedView style={styles.container}>
+                    <ImportNotice focused={focused} />
+                    <ThemedText style={styles.title}>🍳 Import a Recipe</ThemedText>
+                    {/* Image upload */}
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={pickImageAndUpload}
+                        disabled={loading}>
+                        <ThemedText style={styles.buttonText}>Upload Recipe Image</ThemedText>
+                    </TouchableOpacity>
 
-            <ThemedText style={styles.or}>OR</ThemedText>
+                    <ThemedText style={styles.or}>OR</ThemedText>
 
-            {/*  YouTube URL input */}
-            <TextInput
-                placeholder="Paste YouTube URL here"
-                value={youtubeUrl}
-                onChangeText={setYouTubeUrl}
-                style={styles.input}
-                autoCapitalize='none'
-            />
+                    {/*  YouTube URL input */}
+                    <TextInput
+                        placeholder="Paste video URL here"
+                        value={youtubeUrl}
+                        onChangeText={setYouTubeUrl}
+                        style={styles.input}
+                        autoCapitalize='none'
+                        onFocus={() => setFocused(true)}
+                        onBlur={() => setFocused(false)}
+                        readOnly={loading}
+                    />
 
-            <TouchableOpacity
-                style={[styles.button, styles.secondaryButton]}
-                onPress={submitYouTubeUrl}>
-                <ThemedText style={styles.buttonText}>Import from YouTube</ThemedText>
-            </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.button, styles.secondaryButton]}
+                        onPress={submitVideoUrl}
+                        disabled={loading}>
+                        <ThemedText style={styles.buttonText}>Import from video URL</ThemedText>
+                    </TouchableOpacity>
 
-            {loading && (
-                <ThemedView style={styles.loading}>
-                    <ActivityIndicator size="large" />
-                    <ThemedText>Importing recipe...</ThemedText>
+                    {loading && (
+                        <ThemedView style={styles.loading}>
+                            <ActivityIndicator size="large" />
+                            <ThemedText>Importing recipe...</ThemedText>
+                        </ThemedView>
+                    )}
                 </ThemedView>
-            )}
+            </ScrollView>
+        </KeyboardAvoidingView>
 
-        </ThemedView>
     );
 };
 

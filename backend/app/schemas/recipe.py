@@ -31,6 +31,9 @@ class RecipeResponse(BaseModel):
     servings: int
     source_url: Optional[str]
 
+    class Config:
+        from_attributes = True
+
 
 class RecipeListItem(BaseModel):
     id: int
@@ -45,6 +48,15 @@ class RecipeDetail(BaseModel):
     title: str
     ingredients: List[str]
     steps: List[str]
+
+    class Config:
+        from_attributes = True
+
+class RecipeImportResponse(BaseModel):
+    status: str
+    error: Optional[str] = None
+    import_id:Optional[str] = None
+    recipe: Optional[RecipeDetail] = None
 
     class Config:
         from_attributes = True

@@ -5,7 +5,7 @@ from yt_dlp import YoutubeDL
 from app.core.config import settings
 
 
-def download_youtube_audio(url: str) -> str:
+def download_audio(url: str) -> str:
     """
     Downloads YouTube audio and returns the local .mp3 file path.
     """

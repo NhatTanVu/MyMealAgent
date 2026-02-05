@@ -1,15 +1,22 @@
+from fastapi import UploadFile
 from typing import List, Optional
+from urllib.parse import urlparse
+import uuid
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
+from app.db.session import SessionLocal
+from app.models.imports import Import
 from app.models.ingredient import Ingredient
 from app.models.recipe import Recipe
-from app.schemas.recipe import RecipeCreate, RecipeDetail, RecipeListItem, RecipeResponse
+from app.schemas.recipe import RecipeCreate, RecipeDetail, RecipeImportResponse, RecipeListItem, RecipeResponse
 from app.services.audio_chunker import chunk_audio
+from app.services.blob_storage import container_client
 from app.services.ocr import extract_text_from_image
 from app.services.recipe_parser import parse_recipe_from_text
 from app.services.transcription_online_chunked import transcribe
-from app.services.youtube_audio import download_youtube_audio
+from app.services.youtube_audio import download_audio
+from app.tasks.import_media import import_media
 
 router = APIRouter()
 
@@ -80,7 +87,7 @@ async def ingest_recipe(
         source_url = None
     else:
         try:
-            audio_path = download_youtube_audio(recipe.source_url)
+            audio_path = download_audio(recipe.source_url)
             chunk_paths = chunk_audio(audio_path)
             raw_text = transcribe(chunk_paths)
         except Exception as e:
@@ -130,4 +137,120 @@ async def ingest_recipe(
         source_url=source_url,
         cook_time=30,
         servings=2
+    )
+
+
+def detect_provider(url):
+    if not url:
+        return "unknown"
+
+    try:
+        host = urlparse(url).netloc.lower()
+    except Exception:
+        return "unknown"
+
+    if host.startswith("www."):
+        host = host[4:]
+
+    # TikTok
+    if (
+        "tiktok.com" in host
+        or "vm.tiktok.com" in host
+        or "m.tiktok.com" in host
+    ):
+        return "tiktok"
+
+    # Dailymotion
+    if "dailymotion.com" in host or "dai.ly" in host:
+        return "dailymotion"
+
+    # YouTube
+    if (
+        "youtube.com" in host
+        or "youtu.be" in host
+        or "m.youtube.com" in host
+    ):
+        return "youtube"
+
+    # Instagram
+    if "instagram.com" in host:
+        return "instagram"
+
+    return "unknown"
+
+
+def upload_uploadfile_to_blob(file: UploadFile, prefix="uploads") -> str:
+    ext = file.filename.split(".")[-1]
+    blob_name = f"{prefix}/{uuid.uuid4()}.{ext}"
+    container_client.upload_blob(
+        name=blob_name,
+        data=file.file,
+        overwrite=True
+    )
+    return container_client.get_blob_client(blob_name).url
+
+
+@router.post("/imports", response_model=RecipeImportResponse)
+async def start_import(
+        recipe: RecipeCreate = Depends(RecipeCreate.as_form),
+        image: Optional[UploadFile] = File(None),
+        db: Session = Depends(get_db)):
+    if not image and not recipe.source_url:
+        raise HTTPException(
+            status_code=400,
+            detail="Provide either an image or a source URL"
+        )
+
+    if recipe.source_url:
+        provider = detect_provider(recipe.source_url)
+        if (provider in ["unknown", "youtube", "instagram"]):
+            return RecipeImportResponse(
+                status="failed",
+                error="URL is not supported"
+            )
+
+    import_id = str(uuid.uuid4())
+    imp = Import(
+        id=import_id,
+        source_type="url" if recipe.source_url else "file",
+        source_url=recipe.source_url if recipe.source_url else
+        upload_uploadfile_to_blob(image),
+        provider=detect_provider(recipe.source_url),
+        status="queued",
+    )
+    db.add(imp)
+    db.commit()
+    db.close()
+
+    import_media.delay(import_id)
+
+    return RecipeImportResponse(
+        import_id=import_id,
+        status="queued"
+    )
+
+
+@router.get("/imports/{import_id}/status", response_model=RecipeImportResponse)
+def get_status(
+        import_id: str,
+        db: Session = Depends(get_db)):
+    imp = db.query(Import).get(import_id)
+
+    if not imp:
+        raise HTTPException(
+            status_code=404,
+            detail="Import not found"
+        )
+
+    if imp.status != "completed":
+        return RecipeImportResponse(
+            import_id=imp.id,
+            status=imp.status,
+            error=imp.error
+        )
+
+    return RecipeImportResponse(
+        import_id=imp.id,
+        status=imp.status,
+        recipe=get_recipe(imp.recipe_id, db)
     )

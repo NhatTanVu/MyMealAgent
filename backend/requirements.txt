@@ -13,3 +13,6 @@ openai
 yt-dlp
 requests
 ffmpeg-python
+celery
+redis
+azure-storage-blob
