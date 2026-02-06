@@ -16,3 +16,5 @@ ffmpeg-python
 celery
 redis
 azure-storage-blob
+pillow
+opencv-python

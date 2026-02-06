@@ -1,12 +1,60 @@
 from io import BytesIO
+import io
 import os
 from urllib.parse import urlparse
 from PIL import Image
-from azure.storage.blob import BlobClient, BlobServiceClient
-from fastapi import UploadFile, requests
+from azure.storage.blob import BlobServiceClient
+from fastapi import UploadFile
 import pytesseract
-
+import cv2
 from app.core.config import settings
+import numpy as np
+
+
+def preprocess_image_bytes_for_ocr(
+    image_bytes: bytes,
+    max_width: int = 1600,
+) -> bytes:
+    """
+    Preprocess image bytes for Tesseract OCR.
+    Input: raw image bytes
+    Output: optimized PNG bytes
+    """
+
+    # Load bytes into Pillow
+    img = Image.open(io.BytesIO(image_bytes))
+
+    # Convert to grayscale
+    img = img.convert("L")
+
+    # Resize (keep aspect ratio)
+    if img.width > max_width:
+        scale = max_width / img.width
+        new_size = (max_width, int(img.height * scale))
+        img = img.resize(new_size, Image.LANCZOS)
+
+    # Convert Pillow → OpenCV
+    img_np = np.array(img)
+
+    # Light denoising (safe for text)
+    img_np = cv2.fastNlMeansDenoising(img_np, h=10)
+
+    # Adaptive threshold (best for uneven lighting)
+    img_np = cv2.adaptiveThreshold(
+        img_np,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        blockSize=31,
+        C=2,
+    )
+
+    # Encode back to PNG bytes
+    success, encoded = cv2.imencode(".png", img_np)
+    if not success:
+        raise RuntimeError("Failed to encode image")
+
+    return encoded.tobytes()
 
 
 async def extract_text_from_image(image: UploadFile) -> str:
@@ -20,8 +68,10 @@ async def extract_text_from_image(image: UploadFile) -> str:
     """
 
     image_bytes = await image.read()
-    pil_image = Image.open(BytesIO(image_bytes))
-    text = pytesseract.image_to_string(pil_image)
+    processed_bytes = preprocess_image_bytes_for_ocr(image_bytes)
+    text = pytesseract.image_to_string(
+        Image.open(io.BytesIO(processed_bytes)),
+        config="--psm 6")
 
     return text
 

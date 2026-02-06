@@ -37,5 +37,5 @@ async def health_check():
     """Health check endpoint"""
     return {"status": "healthy"}
 
-create_database_if_not_exists()
-Base.metadata.create_all(bind=engine)
+# create_database_if_not_exists()
+# Base.metadata.create_all(bind=engine)
