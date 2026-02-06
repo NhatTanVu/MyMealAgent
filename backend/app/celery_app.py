@@ -12,6 +12,12 @@ celery_app = Celery(
 celery_app.conf.update(
     task_track_started=True,
     result_expires=3600,
+    broker_transport_options={
+        "global_keyprefix": "{celery}",
+    },
+    redis_backend_transport_options={
+        "global_keyprefix": "{celery}",
+    },
 )
 
 # 👇 FORCE task discovery
