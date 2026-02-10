@@ -5,10 +5,11 @@ import uuid
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
-from app.db.session import SessionLocal
+from app.auth.deps import get_current_user
 from app.models.imports import Import
 from app.models.ingredient import Ingredient
 from app.models.recipe import Recipe
+from app.models.user import User
 from app.schemas.recipe import RecipeCreate, RecipeDetail, RecipeImportResponse, RecipeListItem, RecipeResponse
 from app.services.audio_chunker import chunk_audio
 from app.services.blob_storage import container_client
@@ -22,7 +23,8 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[RecipeListItem])
-def get_recipes(db: Session = Depends(get_db)):
+def get_recipes(db: Session = Depends(get_db),
+                current_user: User = Depends(get_current_user)):
     """
     Return all recipes
     """
@@ -40,7 +42,9 @@ def build_recipe_detail(recipe: Recipe) -> RecipeDetail:
 
 
 @router.get("/{id}", response_model=RecipeDetail)
-def get_recipe(id: int, db: Session = Depends(get_db)):
+def get_recipe(id: int,
+               db: Session = Depends(get_db),
+               current_user: User = Depends(get_current_user)):
     """
     Return a single recipe by ID.
     """
@@ -59,7 +63,8 @@ def get_recipe(id: int, db: Session = Depends(get_db)):
 async def ingest_recipe(
         recipe: RecipeCreate = Depends(RecipeCreate.as_form),
         image: Optional[UploadFile] = File(None),
-        db: Session = Depends(get_db)):
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)):
     """
     Import a recipe from either:
     - an uploaded image (cookbook screenshot)
@@ -194,7 +199,8 @@ def upload_uploadfile_to_blob(file: UploadFile, prefix="uploads") -> str:
 async def start_import(
         recipe: RecipeCreate = Depends(RecipeCreate.as_form),
         image: Optional[UploadFile] = File(None),
-        db: Session = Depends(get_db)):
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)):
     if not image and not recipe.source_url:
         raise HTTPException(
             status_code=400,
@@ -233,7 +239,8 @@ async def start_import(
 @router.get("/imports/{import_id}/status", response_model=RecipeImportResponse)
 def get_status(
         import_id: str,
-        db: Session = Depends(get_db)):
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)):
     imp = db.query(Import).get(import_id)
 
     if not imp:

@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     azure_storage_connection_string: str
     azure_storage_container: str
 
+    jwt_secret: str = "my-meal-agent-app"
+    jwt_alg: str = "HS256"
+    jwt_expires_min: int = 43200
+    google_web_client_id: str
+    apple_aud: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

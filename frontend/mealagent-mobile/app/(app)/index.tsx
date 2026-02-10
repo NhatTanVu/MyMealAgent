@@ -1,9 +1,25 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Link } from "expo-router";
+import { useAuth } from "@/hooks/useAuth";
+import { Link, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { Pressable, StyleSheet } from "react-native";
 
 export default function HomeScreen() {
+    const { token, loading, logout } = useAuth();
+    const router = useRouter();
+
+    const onLogout = async () => {
+        await logout();
+        router.replace("/(auth)/login");
+    };
+
+    useEffect(() => {
+        if (!loading && !token) {
+            router.replace("/login");
+        }
+    }, [loading, token]);
+
     return (
         <ThemedView style={styles.container}>
             <ThemedText style={styles.title}>🍳 My Meal Agent</ThemedText>
@@ -12,24 +28,29 @@ export default function HomeScreen() {
             </ThemedText>
 
             {/* Link to /import */}
-            <Link href="/import" asChild>
+            <Link href="/import" asChild style={{ fontSize: 16 }}>
                 <Pressable style={styles.button}>
                     <ThemedText style={styles.buttonText}>Import a Recipe</ThemedText>
                 </Pressable>
             </Link>
 
             {/* Link to /recipes */}
-            <Link href="/recipes" asChild>
+            <Link href="/recipes" asChild style={{ fontSize: 16 }}>
                 <Pressable style={styles.button}>
                     <ThemedText style={styles.buttonText}>View all Recipes</ThemedText>
                 </Pressable>
             </Link>
 
-            <Link href="/plan/step1" asChild>
+            <Link href="/plan/step1" asChild style={{ fontSize: 16 }}>
                 <Pressable style={styles.button}>
                     <ThemedText style={styles.buttonText}>Smart Plan Wizard</ThemedText>
                 </Pressable>
             </Link>
+
+            <Pressable style={[styles.button, styles.logoutButton]}
+                onPress={onLogout}>
+                <ThemedText style={styles.buttonText}>Logout</ThemedText>
+            </Pressable>
         </ThemedView>
     )
 }
@@ -57,11 +78,16 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         paddingHorizontal: 24,
         borderRadius: 8,
-        marginBottom: 14
+        marginBottom: 14,
+        minWidth: 200
+    },
+    logoutButton: {
+        backgroundColor: "#000",
     },
     buttonText: {
         color: "#fff",
         fontSize: 16,
         fontWeight: "600",
+        textAlign: "center"
     },
 });

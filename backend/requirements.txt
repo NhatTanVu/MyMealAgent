@@ -18,3 +18,11 @@ redis
 azure-storage-blob
 pillow
 opencv-python
+bcrypt==4.3.0
+passlib
+python-jose[cryptography]
+pydantic[email]
+google-auth
+python-multipart
+pyjwt
+cryptography
