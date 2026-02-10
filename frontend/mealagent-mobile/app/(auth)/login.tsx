@@ -114,10 +114,21 @@ export default function LoginScreen() {
                     OR
                 </ThemedText>
 
+                {/* Apple (iOS only) */}
+                {appleAvailable && (
+                    <AppleAuthentication.AppleAuthenticationButton
+                        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+                        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                        cornerRadius={6}
+                        style={{ height: 48, marginBottom: 16 }}
+                        onPress={onApple}
+                    />
+                )}
+
                 {/* Google */}
                 <Pressable
                     onPress={onGoogle}
-                    disabled={loading}
+                    disabled={true}
                     style={{
                         borderWidth: 1,
                         padding: 14,
@@ -126,19 +137,8 @@ export default function LoginScreen() {
                         alignItems: "center",
                     }}
                 >
-                    <ThemedText style={{ fontWeight: "500" }}>Continue with Google</ThemedText>
+                    <ThemedText style={{ fontWeight: "500" }}>Continue with Google (disabled)</ThemedText>
                 </Pressable>
-
-                {/* Apple (iOS only) */}
-                {appleAvailable && (
-                    <AppleAuthentication.AppleAuthenticationButton
-                        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-                        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-                        cornerRadius={6}
-                        style={{ height: 44, marginBottom: 16 }}
-                        onPress={onApple}
-                    />
-                )}
 
                 <Link href="/register" style={{ marginTop: 16, fontSize: 16 }}>
                     Don’t have an account? Register
