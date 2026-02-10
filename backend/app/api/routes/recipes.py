@@ -28,7 +28,7 @@ def get_recipes(db: Session = Depends(get_db),
     """
     Return all recipes
     """
-    recipes = db.query(Recipe).order_by(Recipe.id.desc()).all()
+    recipes = db.query(Recipe).filter(Recipe.user_id == current_user.id).all()
     return recipes
 
 
@@ -48,7 +48,8 @@ def get_recipe(id: int,
     """
     Return a single recipe by ID.
     """
-    recipe = db.query(Recipe).filter(Recipe.id == id).first()
+    recipe = db.query(Recipe).filter(
+        Recipe.id == id and Recipe.user_id == current_user.id).first()
 
     if not recipe:
         raise HTTPException(
@@ -112,7 +113,8 @@ async def ingest_recipe(
         cook_time=30,
         servings=2,
         steps="\n".join(steps),
-        raw=raw_text
+        raw=raw_text,
+        user_id=current_user.id
     )
 
     db.add(db_recipe)
@@ -218,6 +220,7 @@ async def start_import(
     import_id = str(uuid.uuid4())
     imp = Import(
         id=import_id,
+        user_id=current_user.id,
         source_type="url" if recipe.source_url else "file",
         source_url=recipe.source_url if recipe.source_url else
         upload_uploadfile_to_blob(image),
@@ -241,7 +244,7 @@ def get_status(
         import_id: str,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
-    imp = db.query(Import).get(import_id)
+    imp = db.query(Import).filter(Import.user_id == current_user.id).get(import_id)
 
     if not imp:
         raise HTTPException(
@@ -259,5 +262,5 @@ def get_status(
     return RecipeImportResponse(
         import_id=imp.id,
         status=imp.status,
-        recipe=get_recipe(imp.recipe_id, db)
+        recipe=get_recipe(imp.recipe_id, db, current_user)
     )

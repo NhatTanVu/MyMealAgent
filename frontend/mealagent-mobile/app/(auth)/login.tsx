@@ -120,7 +120,7 @@ export default function LoginScreen() {
                         buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
                         buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
                         cornerRadius={6}
-                        style={{ height: 48, marginBottom: 16 }}
+                        style={{ height: 44, marginBottom: 16 }}
                         onPress={onApple}
                     />
                 )}

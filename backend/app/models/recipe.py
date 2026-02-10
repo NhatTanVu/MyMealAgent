@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 from app.db.base import Base
 
@@ -19,6 +19,14 @@ class Recipe(Base):
         backref="recipe",
         cascade="all, delete-orphan"
     )
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    user = relationship("User", back_populates="recipes")
 
     # computed property (IMPORTANT)
     def steps_list(self) -> list[str]:

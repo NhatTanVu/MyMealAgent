@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, UniqueConstraint, func
+from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
@@ -15,6 +16,18 @@ class User(Base):
 
     is_active = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    recipes = relationship(
+        "Recipe",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    imports = relationship(
+        "Import",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
 
     __table_args__ = (
         UniqueConstraint("email", name="uq_users_email"),

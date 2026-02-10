@@ -1,4 +1,5 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy.orm import relationship
 
 from app.db.base import Base
 
@@ -12,6 +13,14 @@ class Import(Base):
 
     source_type = Column(String, nullable=False)   # url | file
     source_url = Column(Text)
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    user = relationship("User", back_populates="imports")
 
     recipe_id = Column(
         Integer, 
