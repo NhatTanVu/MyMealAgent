@@ -23,7 +23,12 @@ export default function RegisterScreen() {
 
   return (
     <View style={{ padding: 24 }}>
-      <ThemedText style={{ fontSize: 24, marginBottom: 16 }}>Register</ThemedText>
+      <ThemedText style={{
+        fontSize: 28,
+        fontWeight: "600",
+        marginBottom: 16,
+        lineHeight: 34
+      }}>Register</ThemedText>
 
       <TextInput
         placeholder="Username"

@@ -66,7 +66,11 @@ export default function LoginScreen() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <ScrollView keyboardShouldPersistTaps="handled" style={{ padding: 24 }}>
-                <ThemedText style={{ fontSize: 28, fontWeight: "600", marginBottom: 16 }}>
+                <ThemedText style={{ 
+                    fontSize: 28, 
+                    fontWeight: "600", 
+                    marginBottom: 16,
+                    lineHeight: 34 }}>
                     Welcome back
                 </ThemedText>
 
