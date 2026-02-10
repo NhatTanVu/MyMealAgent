@@ -1,5 +1,6 @@
 from app.celery_app import celery_app
 from app.db.session import SessionLocal
+from app.models.user import User
 from app.models.imports import Import
 from app.services.media_import import run_import
 

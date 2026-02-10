@@ -34,7 +34,8 @@ def run_import(imp: Import, db: Session) -> int:
         cook_time=30,
         servings=2,
         steps="\n".join(steps),
-        raw=raw_text
+        raw=raw_text,
+        user_id=imp.user_id
     )
 
     db.add(db_recipe)
