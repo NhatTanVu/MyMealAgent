@@ -14,8 +14,10 @@
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "https://mymealagent-api.azurewebsites.net",
-        "EXPO_PUBLIC_API_TIMEOUT": "60000"
+        "EXPO_PUBLIC_API_BASE_URL": "https://cycle-desired-day-value.trycloudflare.com",
+        "EXPO_PUBLIC_API_TIMEOUT": "60000",
+        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "246634078881-pmiubc1nqc0pnnm19hkdhqk8c0qb656s.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "246634078881-emhmdmo760he8q0obtg8sfke3f965l9h.apps.googleusercontent.com"
       }
     }
   },

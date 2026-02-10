@@ -1,8 +1,9 @@
-from re import S
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
+from app.auth.deps import get_current_user
 from app.models.recipe import Recipe
+from app.models.user import User
 from app.schemas.agent import IngredientOutput, RunRequest, RunResponse, PlanCandidate, PlanRequest, PlanResponse
 
 router = APIRouter()
@@ -27,7 +28,9 @@ def normalize_unit(unit: str | None) -> str | None:
 
 
 @router.post("/plan", response_model=PlanResponse)
-async def plan_recipes(payload: PlanRequest, db: Session = Depends(get_db)):
+async def plan_recipes(payload: PlanRequest,
+                       db: Session = Depends(get_db),
+                       current_user: User = Depends(get_current_user)):
     user_ingredients = {
         i["name"].lower(): {
             "amount": i.get("amount"),
@@ -103,7 +106,9 @@ async def plan_recipes(payload: PlanRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/run", response_model=RunResponse)
-async def run_meal_agent(payload: RunRequest, db: Session = Depends(get_db)):
+async def run_meal_agent(payload: RunRequest,
+                         db: Session = Depends(get_db),
+                         current_user: User = Depends(get_current_user)):
     user_ingredients = {
         i.name.lower(): i for i in payload.ingredients
     }

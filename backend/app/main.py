@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import agent, recipes
+from app.api.routes import agent, recipes, auth
 from app.core.config import settings
 from app.db.init_db import create_database_if_not_exists
 from app.db.base import Base
@@ -25,6 +25,7 @@ app.add_middleware(
 
 app.include_router(agent.router, prefix="/agent", tags=["Agent"])
 app.include_router(recipes.router, prefix="/recipes", tags=["Recipes"])
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 
 @app.get("/")
 async def root():
