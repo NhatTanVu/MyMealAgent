@@ -1,9 +1,9 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { api } from "@/services/api";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, StyleSheet } from "react-native";
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet } from "react-native";
 
 
 type RecipeDetail = {
@@ -17,6 +17,7 @@ export default function RecipeDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         const loadRecipe = async () => {
@@ -72,6 +73,11 @@ export default function RecipeDetailScreen() {
             {recipe.steps.map((item, index) => (
                 <ThemedText key={index} style={styles.step}>{index + 1}. {item}</ThemedText>
             ))}
+            <ThemedView style={{ marginTop: 24 }}>
+                <Pressable style={styles.secondaryBtn} onPress={() => router.replace("/recipes")}>
+                    <ThemedText style={styles.secondaryBtnText}>← Back to Recipes</ThemedText>
+                </Pressable>
+            </ThemedView>
         </ScrollView>
     )
 }
@@ -105,5 +111,15 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginBottom: 8,
         lineHeight: 22
-    }
+    },
+    secondaryBtn: {
+        padding: 14,
+        borderRadius: 10,
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: "#ccc"
+    },
+    secondaryBtnText: {
+        fontWeight: "700"
+    },
 });
