@@ -1,8 +1,9 @@
 import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { Pressable, TextInput } from "react-native";
 
 export default function RegisterScreen() {
   const { register } = useAuth();
@@ -22,7 +23,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={{ padding: 24 }}>
+    <ThemedView style={{ padding: 24 }}>
       <ThemedText style={{
         fontSize: 28,
         fontWeight: "600",
@@ -71,7 +72,7 @@ export default function RegisterScreen() {
       <Link href="/login" style={{ marginTop: 16, fontSize: 16 }}>
         Already have an account? Login
       </Link>
-    </View>
+    </ThemedView>
   );
 }
 
