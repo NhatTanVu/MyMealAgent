@@ -112,7 +112,8 @@ async def run_meal_agent(payload: RunRequest,
     user_ingredients = {
         i.name.lower(): i for i in payload.ingredients
     }
-    recipe = db.query(Recipe).filter(Recipe.id == payload.recipe_id and Recipe.user_id == current_user.id).first()
+    recipe = db.query(Recipe).filter(
+        Recipe.id == payload.recipe_id, Recipe.user_id == current_user.id).first()
 
     if not recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")

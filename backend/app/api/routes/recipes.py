@@ -49,7 +49,7 @@ def get_recipe(id: int,
     Return a single recipe by ID.
     """
     recipe = db.query(Recipe).filter(
-        Recipe.id == id and Recipe.user_id == current_user.id).first()
+        Recipe.id == id, Recipe.user_id == current_user.id).first()
 
     if not recipe:
         raise HTTPException(
@@ -244,7 +244,8 @@ def get_status(
         import_id: str,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
-    imp = db.query(Import).filter(Import.user_id == current_user.id and Import.id == import_id).first()
+    imp = db.query(Import).filter(Import.user_id ==
+                                  current_user.id, Import.id == import_id).first()
 
     if not imp:
         raise HTTPException(
