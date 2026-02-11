@@ -42,6 +42,3 @@ jobs:
           az webapp restart \
             --name ${{ secrets.WEBAPP_NAME }} \
             --resource-group ${{ secrets.RG_NAME }}
-          az webapp restart \
-            --name ${{ secrets.WORKERAPP_NAME }} \
-            --resource-group ${{ secrets.RG_NAME }}
