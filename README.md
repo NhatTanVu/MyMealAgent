@@ -90,7 +90,7 @@ From inspiration to execution - seamlessly.
 
 ---
 
-## 🔮 What’s Next for MyMealAgent
+## 🔮 What’s Next for My Meal Agent
 
 - 🌐 Support for more website and recipe sources  
 - 🍽️ Enhanced AI recipe optimization  
