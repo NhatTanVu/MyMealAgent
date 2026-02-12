@@ -29,7 +29,7 @@ export default function AppLayout() {
             />
             <Stack.Screen name="plan" options={{ title: "Plan", headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-            <Stack.Screen name="upgrade/index" options={{ title: "Upgrade Account" }} />
+            <Stack.Screen name="billing/index" options={{ title: "Billing" }} />
         </Stack>
     );
 }

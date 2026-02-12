@@ -11,7 +11,7 @@ router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 def revenuecat_webhook(payload: dict, db: Session = Depends(get_db)):
     event = payload.get("event")
     # RevenueCat sends app_user_id as string
-    user_id = payload.get("subscriber", {}).get("app_user_id")
+    user_id = event.get("app_user_id")
 
     if not user_id:
         return {"ok": True}

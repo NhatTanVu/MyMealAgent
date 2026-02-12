@@ -1,6 +1,5 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { useBilling } from "@/context/purchaseProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useRouter } from "expo-router";
 import { useEffect } from "react";
@@ -9,7 +8,6 @@ import { Pressable, StyleSheet } from "react-native";
 export default function HomeScreen() {
     const { token, loading, logout } = useAuth();
     const router = useRouter();
-    const { isPremium } = useBilling();
     const { user } = useAuth();
 
     const onLogout = async () => {
@@ -53,11 +51,11 @@ export default function HomeScreen() {
                 </Pressable>
             </Link>
 
-            {!isPremium && <Link href="/upgrade" asChild style={{ fontSize: 16 }}>
+            <Link href="/billing" asChild style={{ fontSize: 16 }}>
                 <Pressable style={styles.button}>
-                    <ThemedText style={styles.buttonText}>Upgrade</ThemedText>
+                    <ThemedText style={styles.buttonText}>Billing</ThemedText>
                 </Pressable>
-            </Link>}
+            </Link>
 
             <Pressable style={[styles.button, styles.logoutButton]}
                 onPress={onLogout}>

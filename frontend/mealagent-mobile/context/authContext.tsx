@@ -5,7 +5,7 @@ import { clearToken, getToken, saveToken } from "@/services/auth/token";
 import { createContext, useContext, useEffect, useState } from "react";
 import * as authApi from "../services/auth/authApi";
 
-type User = {
+export type User = {
     id: number;
     email: string;
     username: string;
@@ -22,6 +22,7 @@ type AuthContextType = {
     loginApple: () => Promise<void>;
     logout: () => Promise<void>;
     user: User | null;
+    reloadUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -77,10 +78,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setToken(t);
     };
 
+    const reloadUser = async () => {
+        if (token) {
+            const userData = await getUser(token);
+            setUser(userData);
+        }
+    };
+
     return (
         <AuthContext.Provider value={{
             token, loading, login, register, logout,
-            loginApple, loginGoogle, user
+            loginApple, loginGoogle, user, reloadUser
         }}>
             {children}
         </AuthContext.Provider>

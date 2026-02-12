@@ -27,8 +27,9 @@ function AppNavigator() {
     );
   }
 
+  console.log(user);
   return (
-    <PurchasesProvider userId={user ? user.id.toString() : null}>
+    <PurchasesProvider user={user}>
       <SafeAreaProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DefaultTheme : DefaultTheme}>
           <Stack screenOptions={{ headerShown: false }}>
