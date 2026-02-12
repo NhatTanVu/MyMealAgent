@@ -1,5 +1,6 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useBilling } from "@/context/purchaseProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useRouter } from "expo-router";
 import { useEffect } from "react";
@@ -8,6 +9,8 @@ import { Pressable, StyleSheet } from "react-native";
 export default function HomeScreen() {
     const { token, loading, logout } = useAuth();
     const router = useRouter();
+    const { isPremium } = useBilling();
+    const { user } = useAuth();
 
     const onLogout = async () => {
         await logout();
@@ -23,8 +26,11 @@ export default function HomeScreen() {
     return (
         <ThemedView style={styles.container}>
             <ThemedText style={styles.title}>🍳 My Meal Agent</ThemedText>
-            <ThemedText style={styles.subtitle}>
-                Your AI-powered cooking assistant
+            <ThemedText style={[styles.subtitle, {marginBottom: 8}]}>
+                Hi <ThemedText style={{fontWeight: "bold"}}>{user?.username || user?.email}</ThemedText>!
+            </ThemedText>
+            <ThemedText style={[styles.subtitle, {marginBottom: 24}]}>
+                I'm your AI-powered cooking assistant.
             </ThemedText>
 
             {/* Link to /import */}
@@ -46,6 +52,12 @@ export default function HomeScreen() {
                     <ThemedText style={styles.buttonText}>Smart Plan Wizard</ThemedText>
                 </Pressable>
             </Link>
+
+            {!isPremium && <Link href="/upgrade" asChild style={{ fontSize: 16 }}>
+                <Pressable style={styles.button}>
+                    <ThemedText style={styles.buttonText}>Upgrade</ThemedText>
+                </Pressable>
+            </Link>}
 
             <Pressable style={[styles.button, styles.logoutButton]}
                 onPress={onLogout}>
@@ -70,7 +82,6 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         color: "#666",
-        marginBottom: 24,
         textAlign: "center",
     },
     button: {

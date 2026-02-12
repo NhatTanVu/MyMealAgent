@@ -14,3 +14,12 @@ api.interceptors.request.use(async (config) => {
     return config;
 });
 
+export async function getUser(token: string) {
+    const res = await api.get("/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    return res.data;
+  }
+

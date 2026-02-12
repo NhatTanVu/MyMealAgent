@@ -5,6 +5,7 @@ import 'react-native-reanimated';
 
 import { ThemedView } from '@/components/themed-view';
 import { AuthProvider } from '@/context/authContext';
+import { PurchasesProvider } from '@/context/purchaseProvider';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuth } from '@/hooks/useAuth';
 import { ActivityIndicator } from 'react-native';
@@ -16,7 +17,7 @@ export const unstable_settings = {
 
 function AppNavigator() {
   const colorScheme = useColorScheme();
-  const { token, loading } = useAuth();
+  const { token, loading, user } = useAuth();
 
   if (loading) {
     return (
@@ -27,18 +28,20 @@ function AppNavigator() {
   }
 
   return (
-    <SafeAreaProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DefaultTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          {token ? (
-            <Stack.Screen name="(app)" />
-          ) : (
-            <Stack.Screen name="(auth)" />
-          )}
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <PurchasesProvider userId={user ? user.id.toString() : null}>
+      <SafeAreaProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DefaultTheme : DefaultTheme}>
+          <Stack screenOptions={{ headerShown: false }}>
+            {token ? (
+              <Stack.Screen name="(app)" />
+            ) : (
+              <Stack.Screen name="(auth)" />
+            )}
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </PurchasesProvider>
   );
 }
 
