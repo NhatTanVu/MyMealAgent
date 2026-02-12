@@ -3,11 +3,13 @@ import { ThemedView } from "@/components/themed-view";
 import { useBilling } from "@/context/purchaseProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { showPaywall } from "@/services/billing/paywall";
+import { useRouter } from "expo-router";
 import { Alert, Pressable, StyleSheet } from "react-native";
 
 export default function BillingScreen() {
   const { isPremium, restore } = useBilling();
   const { reloadUser } = useAuth();
+  const router = useRouter();
 
   return (
     <ThemedView style={styles.container}>
@@ -19,11 +21,12 @@ export default function BillingScreen() {
         <Pressable onPress={() => {
           showPaywall().then(async (result) => {
             if (result) {
-              await new Promise(r => setTimeout(r, 1000));
               await reloadUser();
+              Alert.alert("Upgrade successful!");
             }
             else {
-              Alert.alert("Failed to purchase!");
+              Alert.alert("Failed to upgrade!");
+              router.push("/");
             }
           })
         }} style={styles.button}>
@@ -31,7 +34,7 @@ export default function BillingScreen() {
         </Pressable>
       )}
 
-      <Pressable onPress={restore} style={[styles.button, {backgroundColor: "#A5D6A7"}]} disabled={true}>
+      <Pressable onPress={restore} style={[styles.button, { backgroundColor: "#A5D6A7" }]} disabled={true}>
         <ThemedText style={styles.buttonText}>Restore Purchases (disabled)</ThemedText>
       </Pressable>
     </ThemedView>

@@ -16,18 +16,17 @@ export default function HomeScreen() {
     };
 
     useEffect(() => {
-        if (!loading && !token) {
+        if (!loading && !token)
             router.replace("/login");
-        }
     }, [loading, token]);
 
     return (
         <ThemedView style={styles.container}>
             <ThemedText style={styles.title}>🍳 My Meal Agent</ThemedText>
-            <ThemedText style={[styles.subtitle, {marginBottom: 8}]}>
-                Hi <ThemedText style={{fontWeight: "bold"}}>{user?.username || user?.email}</ThemedText>!
+            <ThemedText style={[styles.subtitle, { marginBottom: 8 }]}>
+                Hi <ThemedText style={{ fontWeight: "bold" }}>{user?.username || user?.email}</ThemedText>!
             </ThemedText>
-            <ThemedText style={[styles.subtitle, {marginBottom: 24}]}>
+            <ThemedText style={[styles.subtitle, { marginBottom: 24 }]}>
                 I'm your AI-powered cooking assistant.
             </ThemedText>
 
