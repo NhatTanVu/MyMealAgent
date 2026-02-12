@@ -207,3 +207,4 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 backend/mealagent_schema.sql
+frontend/mealagent-mobile/eas.json

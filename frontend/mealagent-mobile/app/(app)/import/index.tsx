@@ -16,7 +16,7 @@ export default function ImportRecipeScreen() {
     const router = useRouter();
     const [focused, setFocused] = useState(false);
     const [importId, setImportId] = useState("");
-    const { user } = useAuth();
+    const { user, reloadUser } = useAuth();
     const { isPremium } = useBilling();
 
     const pickImageAndUpload = async () => {
@@ -118,7 +118,19 @@ export default function ImportRecipeScreen() {
                 Alert.alert(
                     "Upgrade Required",
                     `Free plan allows maximum ${process.env.EXPO_PUBLIC_PREMIUM_RECIPE_COUNT_LIMIT} recipes. Upgrade to Premium for unlimited imports.`,
-                    [{ text: "Upgrade", onPress: showPaywall }]
+                    [{
+                        text: "Upgrade", onPress: () => {
+                            showPaywall().then(async (result) => {
+                                if (result) {
+                                    await new Promise(r => setTimeout(r, 1000));
+                                    await reloadUser();
+                                }
+                                else {
+                                    Alert.alert("Failed to purchase!");
+                                }
+                            })
+                        }
+                    }]
                 );
             }
         }

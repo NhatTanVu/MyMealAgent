@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import Purchases, { CustomerInfo } from "react-native-purchases";
+import { User } from "./authContext";
 
 const ENTITLEMENT_ID = "my_meal_agent_pro";
 
@@ -14,10 +15,10 @@ const BillingContext = createContext<BillingContextType | null>(null);
 
 export function PurchasesProvider({
   children,
-  userId,
+  user,
 }: {
   children: React.ReactNode;
-  userId: string | null;
+  user: User | null;
 }) {
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
 
@@ -25,10 +26,11 @@ export function PurchasesProvider({
     async function init() {
       try {
         const apiKey = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!;
+        console.log(`EXPO_PUBLIC_REVENUECAT_API_KEY = ${apiKey}`);
 
         Purchases.configure({
           apiKey,
-          appUserID: userId,
+          appUserID: user?.id.toString(),
         });
 
         const info = await Purchases.getCustomerInfo();
@@ -41,7 +43,7 @@ export function PurchasesProvider({
     }
 
     init();
-  }, [userId]);
+  }, [user?.id]);
 
   const refresh = async () => {
     const info = await Purchases.getCustomerInfo();
@@ -54,7 +56,8 @@ export function PurchasesProvider({
   };
 
   const isPremium =
-    customerInfo?.entitlements.active[ENTITLEMENT_ID] != null;
+    (customerInfo?.entitlements.active[ENTITLEMENT_ID] != null) ||
+    (user?.plan == "Premium");
 
   return (
     <BillingContext.Provider value={{ isPremium, customerInfo, restore, refresh }}>
