@@ -1,8 +1,8 @@
-# 🍽️ MyMealAgent
+# 🍽️ My Meal Agent (MM Agent)
 
 ## 🚀 Inspiration
 
-MyMealAgent was born from a simple but universal problem:
+My Meal Agent was born from a simple but universal problem:
 
 We save dozens of recipes from cookbooks, YouTube, TikTok, and social media - but most of them never make it to the kitchen.
 
@@ -11,13 +11,13 @@ It’s execution.
 
 Planning meals, checking ingredients, writing grocery lists, and managing time often break the flow between *“That looks delicious”* and *“Dinner is ready.”*
 
-MyMealAgent exists to close that gap.
+My Meal Agent exists to close that gap.
 
 ---
 
 ## 🧠 What It Does
 
-MyMealAgent transforms saved recipes into real meals.
+My Meal Agent transforms saved recipes into real meals.
 
 It intelligently considers:
 
@@ -102,6 +102,6 @@ From inspiration to execution - seamlessly.
 
 ## 💡 The Vision
 
-MyMealAgent is not just a recipe organizer.
+My Meal Agent is not just a recipe organizer.
 
 It’s an intelligent cooking companion that helps people turn saved inspiration into real meals - effortlessly.
