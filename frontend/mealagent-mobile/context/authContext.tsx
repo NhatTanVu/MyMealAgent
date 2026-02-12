@@ -1,8 +1,17 @@
+import { getUser } from "@/services/api";
 import { loginWithApple } from "@/services/auth/apple";
 import { useGoogleLogin } from "@/services/auth/google";
 import { clearToken, getToken, saveToken } from "@/services/auth/token";
 import { createContext, useContext, useEffect, useState } from "react";
 import * as authApi from "../services/auth/authApi";
+
+type User = {
+    id: number;
+    email: string;
+    username: string;
+    plan: string;
+    recipe_count: number;
+};
 
 type AuthContextType = {
     token: string | null;
@@ -11,7 +20,8 @@ type AuthContextType = {
     register: (u: string, p: string, e?: string) => Promise<void>;
     loginGoogle: () => Promise<void>;
     loginApple: () => Promise<void>;
-    logout: () => Promise<void>
+    logout: () => Promise<void>;
+    user: User | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,10 +29,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        getToken().then((t) => {
-            setToken(t);
+        getToken().then(async (t) => {
+            if (t) {
+                setToken(t);
+                const userData = await getUser(t);
+                setUser(userData);
+            }
             setLoading(false);
         });
     }, []);
@@ -31,12 +46,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const t = await authApi.login(u, p);
         await saveToken(t);
         setToken(t);
+        const userData = await getUser(t);
+        setUser(userData);
     };
 
     const register = async (u: string, p: string, e?: string) => {
         const t = await authApi.register(u, p, e);
         await saveToken(t);
         setToken(t);
+        const userData = await getUser(t);
+        setUser(userData);
     };
 
     const logout = async () => {
@@ -61,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return (
         <AuthContext.Provider value={{
             token, loading, login, register, logout,
-            loginApple, loginGoogle
+            loginApple, loginGoogle, user
         }}>
             {children}
         </AuthContext.Provider>

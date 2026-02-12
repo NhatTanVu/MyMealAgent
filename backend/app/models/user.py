@@ -29,6 +29,18 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    plan = Column(
+        String,
+        nullable=False,
+        default="Free",  # "Free" | "Premium"
+    )
+
+    recipe_count = Column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
     __table_args__ = (
         UniqueConstraint("email", name="uq_users_email"),
         UniqueConstraint("username", name="uq_users_username"),

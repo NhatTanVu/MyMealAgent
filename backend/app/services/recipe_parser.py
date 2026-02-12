@@ -45,7 +45,7 @@ def parse_recipe_from_text(text: str) -> dict:
     """
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5.1",
         response_format={"type": "json_object"},
         messages=[{"role": "user", "content": prompt}]
     )

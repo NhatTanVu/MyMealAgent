@@ -18,8 +18,10 @@ services:
     environment:
       - REDIS_URL=redis://redis:6379/0
   worker:
-    build: .
-    command: celery -A app.celery_app worker -l info
+    build:
+      context: .
+      dockerfile: Dockerfile.worker 
+    image: mymealagent-worker
     depends_on:
       - redis
     env_file:

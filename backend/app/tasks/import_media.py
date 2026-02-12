@@ -20,6 +20,11 @@ def import_media(self, import_id: str):
 
         imp.status = "completed"
         imp.recipe_id = recipe_id
+
+        user = db.get(User, imp.user_id)
+        if user:
+            user.recipe_count = user.recipe_count + 1
+
         db.commit()
 
     except Exception as e:

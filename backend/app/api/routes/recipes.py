@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.auth.deps import get_current_user
+from app.core.config import PLAN_LIMITS
 from app.models.imports import Import
 from app.models.ingredient import Ingredient
 from app.models.recipe import Recipe
@@ -20,6 +21,15 @@ from app.services.youtube_audio import download_audio
 from app.tasks.import_media import import_media
 
 router = APIRouter()
+
+def assert_can_create_recipe(user: User):
+    limit = PLAN_LIMITS[user.plan]
+
+    if limit is not None and limit is not None and user.recipe_count >= limit:
+        raise HTTPException(
+            status_code=403,
+            detail=f"{user.plan} plan allows up to {limit} recipes. Upgrade to Premium.",
+        )
 
 
 @router.get("/", response_model=List[RecipeListItem])
@@ -78,6 +88,8 @@ async def ingest_recipe(
             detail="Provide either an image or a source URL"
         )
 
+    assert_can_create_recipe(current_user)
+
     if image:
         try:
             raw_text = await extract_text_from_image(image)
@@ -132,6 +144,7 @@ async def ingest_recipe(
     ]
 
     db.add_all(db_ingredients)
+    current_user.recipe_count = current_user.recipe_count + 1
     db.commit()
 
     db.refresh(db_recipe)
@@ -216,6 +229,8 @@ async def start_import(
                 status="failed",
                 error="URL is not supported"
             )
+
+    assert_can_create_recipe(current_user)
 
     import_id = str(uuid.uuid4())
     imp = Import(

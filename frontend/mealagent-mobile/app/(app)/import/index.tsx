@@ -1,6 +1,9 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useBilling } from '@/context/purchaseProvider';
+import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/services/api';
+import { showPaywall } from '@/services/billing/paywall';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from "react";
@@ -13,6 +16,8 @@ export default function ImportRecipeScreen() {
     const router = useRouter();
     const [focused, setFocused] = useState(false);
     const [importId, setImportId] = useState("");
+    const { user } = useAuth();
+    const { isPremium } = useBilling();
 
     const pickImageAndUpload = async () => {
         try {
@@ -82,7 +87,6 @@ export default function ImportRecipeScreen() {
 
     useEffect(() => {
         if (importId != "") {
-            debugger;
             const poll = setInterval(async () => {
                 try {
                     const res = await api.get(`/recipes/imports/${importId}/status`);
@@ -107,6 +111,21 @@ export default function ImportRecipeScreen() {
             }, 2000);
         }
     }, [importId]);
+
+    useEffect(() => {
+        async function checkLimit() {
+            if (!isPremium && user!.recipe_count >= parseInt(process.env.EXPO_PUBLIC_PREMIUM_RECIPE_COUNT_LIMIT!)) {
+                Alert.alert(
+                    "Upgrade Required",
+                    `Free plan allows maximum ${process.env.EXPO_PUBLIC_PREMIUM_RECIPE_COUNT_LIMIT} recipes. Upgrade to Premium for unlimited imports.`,
+                    [{ text: "Upgrade", onPress: showPaywall }]
+                );
+            }
+        }
+        checkLimit();
+    }, [user, isPremium]);
+
+
 
     return (
         <KeyboardAvoidingView
