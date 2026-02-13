@@ -98,6 +98,7 @@ The system consists of:
 
 ## High-Level Architecture
 
+```
 Mobile App (Expo)
 │
 ▼
@@ -115,6 +116,7 @@ Celery Worker (Azure Container App)
 ├── yt-dlp (audio extraction from TikTok/Dailymotion URLs)
 │
 └── OpenAI API (transcription + summarization)
+```
 
 ---
 
