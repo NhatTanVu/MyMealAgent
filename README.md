@@ -58,7 +58,6 @@ From inspiration to execution - seamlessly.
 - OpenAI API for:
   - Converting audio to transcript
   - Summarizing transcript into structured ingredients & steps
-- Intelligent parsing of social media recipe URLs
 
 ---
 
