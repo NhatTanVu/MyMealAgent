@@ -1,8 +1,8 @@
-# 🍽️ My Meal Agent (MM Agent)
+# 🍽️ MyMealAgent (MM Agent)
 
 ## 🚀 Inspiration
 
-My Meal Agent was born from a simple but universal problem:
+MyMealAgent was born from a simple but universal problem:
 
 We save dozens of recipes from cookbooks, YouTube, TikTok, and social media - but most of them never make it to the kitchen.
 
@@ -11,13 +11,13 @@ It’s execution.
 
 Planning meals, checking ingredients, writing grocery lists, and managing time often break the flow between *“That looks delicious”* and *“Dinner is ready.”*
 
-My Meal Agent exists to close that gap.
+MyMealAgent exists to close that gap.
 
 ---
 
 ## 🧠 What It Does
 
-My Meal Agent transforms saved recipes into real meals.
+MyMealAgent transforms saved recipes into real meals.
 
 It intelligently considers:
 
@@ -54,8 +54,9 @@ From inspiration to execution - seamlessly.
 
 ### 🤖 AI & Processing
 - Tesseract OCR for extracting text from images
+- YoutubeDL for extracting audio from video URLs (i.e. Tiktok, Dailymotion)
 - OpenAI API for:
-  - Converting video to transcript
+  - Converting audio to transcript
   - Summarizing transcript into structured ingredients & steps
 - Intelligent parsing of social media recipe URLs
 
@@ -90,7 +91,7 @@ From inspiration to execution - seamlessly.
 
 ---
 
-## 🔮 What’s Next for My Meal Agent
+## 🔮 What’s Next for MyMealAgent
 
 - 🌐 Support for more website and recipe sources  
 - 🍽️ Enhanced AI recipe optimization  
@@ -102,6 +103,6 @@ From inspiration to execution - seamlessly.
 
 ## 💡 The Vision
 
-My Meal Agent is not just a recipe organizer.
+MyMealAgent is not just a recipe organizer.
 
 It’s an intelligent cooking companion that helps people turn saved inspiration into real meals - effortlessly.
