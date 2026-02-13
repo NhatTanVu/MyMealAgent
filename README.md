@@ -1,5 +1,11 @@
 # 🍽️ MyMealAgent (MM Agent)
 
+<p align="center">
+  <a href="https://www.youtube.com/shorts/wUbawUB5tlM">
+    <img src="https://img.youtube.com/vi/wUbawUB5tlM/maxresdefault.jpg" width="600"/>
+  </a>
+</p>
+
 ## 🚀 Inspiration
 
 MyMealAgent was born from a simple but universal problem:
