@@ -20,6 +20,9 @@ export default function ImportRecipeScreen() {
     const { isPremium } = useBilling();
 
     const pickImageAndUpload = async () => {
+        const isLimit = await checkLimit();
+        if (isLimit) return;
+
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: 'images',
@@ -67,6 +70,9 @@ export default function ImportRecipeScreen() {
             return;
         }
 
+        const isLimit = await checkLimit();
+        if (isLimit) return;
+
         try {
             setLoading(true);
             setFocused(true);
@@ -94,9 +100,10 @@ export default function ImportRecipeScreen() {
 
                     if (data["status"] === "completed") {
                         clearInterval(poll);
+                        await reloadUser();
                         Alert.alert("Success", "Recipe imported!");
-                        const recipe_id = data["recipe"]["id"]
-                        router.push(`/recipe/${recipe_id}`)
+                        const recipe_id = data["recipe"]["id"];
+                        router.push(`/recipe/${recipe_id}`);
                         setLoading(false);
                     } else if (data["status"] === "failed") {
                         clearInterval(poll);
@@ -105,6 +112,7 @@ export default function ImportRecipeScreen() {
                     }
                 }
                 catch (err: any) {
+                    clearInterval(poll);
                     Alert.alert("Error", err.message || "Failed to import");
                     setLoading(false);
                 }
@@ -112,32 +120,31 @@ export default function ImportRecipeScreen() {
         }
     }, [importId]);
 
-    useEffect(() => {
-        async function checkLimit() {
-            if (!isPremium && user!.recipe_count >= parseInt(process.env.EXPO_PUBLIC_PREMIUM_RECIPE_COUNT_LIMIT!)) {
-                Alert.alert(
-                    "Upgrade Required",
-                    `Free plan allows maximum ${process.env.EXPO_PUBLIC_PREMIUM_RECIPE_COUNT_LIMIT} recipes. Upgrade to Premium for unlimited imports.`,
-                    [{
-                        text: "Upgrade", onPress: () => {
-                            showPaywall().then(async (result) => {
-                                if (result) {
-                                    await new Promise(r => setTimeout(r, 1000));
-                                    await reloadUser();
-                                }
-                                else {
-                                    Alert.alert("Failed to purchase!");
-                                }
-                            })
-                        }
-                    }]
-                );
-            }
+    async function checkLimit() {
+        if (!isPremium && user!.recipe_count >= parseInt(process.env.EXPO_PUBLIC_PREMIUM_RECIPE_COUNT_LIMIT!)) {
+            Alert.alert(
+                "Upgrade Required",
+                `Free plan allows maximum ${process.env.EXPO_PUBLIC_PREMIUM_RECIPE_COUNT_LIMIT} recipes. Upgrade to Premium for unlimited imports.`,
+                [{
+                    text: "Upgrade", onPress: () => {
+                        showPaywall().then(async (result) => {
+                            if (result) {
+                                await reloadUser();
+                                Alert.alert("Upgrade successful!");
+                            }
+                            else {
+                                Alert.alert("Failed to upgrade!");
+                                router.push("/");
+                            }
+                        })
+                    }
+                }]
+            );
+            return true;
         }
-        checkLimit();
-    }, [user, isPremium]);
-
-
+        else
+            return false;
+    }
 
     return (
         <KeyboardAvoidingView
