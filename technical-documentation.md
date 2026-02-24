@@ -48,56 +48,6 @@ The system consists of:
 
 ## High-Level Architecture
 
-# MyMealAgent – Technical Documentation
-
-## 1. Overview
-
-MyMealAgent is a mobile-first AI-powered cooking assistant that converts saved recipe content into structured, actionable cooking plans.
-
-The system consists of:
-
-- A React Native mobile application (Expo)
-- A FastAPI backend service
-- Asynchronous task processing with Celery
-- Media processing with OCR and video/audio extraction
-- Cloud deployment using Docker and Azure
-- Subscription management using RevenueCat
-
----
-
-# 2. Tech Stack
-
-## Mobile Application
-
-- **Framework:** React Native (Expo)
-- **Navigation:** Expo Router
-- **State Management:** React Context + custom hooks
-- **Secure Storage:** Expo SecureStore
-- **Billing:** RevenueCat (react-native-purchases, react-native-purchases-ui)
-- **Build & Distribution:** EAS Build + TestFlight
-
----
-
-## Backend API
-
-- **Framework:** FastAPI
-- **ORM:** SQLAlchemy
-- **Database:** PostgreSQL (Azure)
-- **Authentication:** JWT-based auth
-- **Task Queue:** Celery
-- **Broker:** Redis (Azure Cache for Redis)
-- **OCR Processing:** Tesseract
-- **Video/Audio Extraction:** yt-dlp (YoutubeDL)
-- **AI Processing:** OpenAI API (transcription + summarization)
-- **Containerization:** Docker
-- **Hosting:** Azure App Service + Azure Container Apps (Celery worker)
-
----
-
-# 3. System Architecture
-
-## High-Level Architecture
-
 ```
 Mobile App (Expo)
 │
