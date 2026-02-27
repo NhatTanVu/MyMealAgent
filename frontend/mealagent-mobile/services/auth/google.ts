@@ -1,18 +1,30 @@
+import * as AuthSession from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
+import Constants from "expo-constants";
 import * as WebBrowser from "expo-web-browser";
 import { api } from "../api";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export function useGoogleLogin() {
-    const [request, response, promptAsync] = Google.useAuthRequest({
+    const isExpoGo = Constants.executionEnvironment === "storeClient";
+    const redirectUri = AuthSession.makeRedirectUri({
+        scheme: "mymealagent",
+        path: "oauthredirect",
+        useProxy: isExpoGo,
+    });
+
+    const [request, , promptAsync] = Google.useAuthRequest({
+        expoClientId: process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID,
         webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
         iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+        androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+        redirectUri,
         scopes: ["openid", "profile", "email"],
     });
 
     const loginWithGoogle = async () => {
-        const result = await promptAsync();
+        const result = await promptAsync(isExpoGo ? { useProxy: true } : undefined);
 
         if (result.type !== "success") {
             throw new Error("Google login cancelled");
