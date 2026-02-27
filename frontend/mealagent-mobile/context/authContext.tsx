@@ -2,6 +2,7 @@ import { getUser } from "@/services/api";
 import { loginWithApple } from "@/services/auth/apple";
 import { useGoogleLogin } from "@/services/auth/google";
 import { clearToken, getToken, saveToken } from "@/services/auth/token";
+import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import * as authApi from "../services/auth/authApi";
 
@@ -32,14 +33,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
-        getToken().then(async (t) => {
-            if (t) {
-                setToken(t);
-                const userData = await getUser(t);
-                setUser(userData);
+    const loadUser = async (tokenToLoad: string) => {
+        try {
+            const userData = await getUser(tokenToLoad);
+            setUser(userData);
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 401) {
+                await clearToken();
+                setToken(null);
+                setUser(null);
+                return;
             }
-            setLoading(false);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        getToken().then(async (storedToken) => {
+            try {
+                if (storedToken) {
+                    setToken(storedToken);
+                    await loadUser(storedToken);
+                }
+            } finally {
+                setLoading(false);
+            }
         });
     }, []);
 
@@ -47,16 +65,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const t = await authApi.login(u, p);
         await saveToken(t);
         setToken(t);
-        const userData = await getUser(t);
-        setUser(userData);
+        await loadUser(t);
     };
 
     const register = async (u: string, p: string, e?: string) => {
         const t = await authApi.register(u, p, e);
         await saveToken(t);
         setToken(t);
-        const userData = await getUser(t);
-        setUser(userData);
+        await loadUser(t);
     };
 
     const logout = async () => {
@@ -80,8 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const reloadUser = async () => {
         if (token) {
-            const userData = await getUser(token);
-            setUser(userData);
+            await loadUser(token);
         }
     };
 
