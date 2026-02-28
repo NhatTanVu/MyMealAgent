@@ -31,15 +31,15 @@ export function useGoogleLogin() {
                 : undefined;
 
         if (!idToken && authCode && request?.codeVerifier) {
-            const webClientId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
+            const exchangeClientId = request.clientId;
 
-            if (!webClientId) {
-                throw new Error("Google web client ID is not configured");
+            if (!exchangeClientId) {
+                throw new Error("Google client ID is not configured for code exchange");
             }
 
             const tokenResponse = await AuthSession.exchangeCodeAsync(
                 {
-                    clientId: webClientId,
+                    clientId: exchangeClientId,
                     code: authCode,
                     redirectUri: request.redirectUri,
                     extraParams: { code_verifier: request.codeVerifier },
