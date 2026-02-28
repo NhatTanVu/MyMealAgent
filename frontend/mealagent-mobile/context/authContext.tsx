@@ -78,20 +78,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const logout = async () => {
         await clearToken();
         setToken(null);
+        setUser(null);
     };
 
-    const { loginWithGoogle, request } = useGoogleLogin();
+    const { loginWithGoogle } = useGoogleLogin();
 
     const loginGoogle = async () => {
         const t = await loginWithGoogle();
         await saveToken(t);
         setToken(t);
+        await loadUser(t);
     };
 
     const loginApple = async () => {
         const t = await loginWithApple();
         await saveToken(t);
         setToken(t);
+        await loadUser(t);
     };
 
     const reloadUser = async () => {
@@ -101,10 +104,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{
-            token, loading, login, register, logout,
-            loginApple, loginGoogle, user, reloadUser
-        }}>
+        <AuthContext.Provider
+            value={{ token, loading, login, register, logout, loginApple, loginGoogle, user, reloadUser }}
+        >
             {children}
         </AuthContext.Provider>
     );
