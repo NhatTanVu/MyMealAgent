@@ -80,18 +80,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setToken(null);
     };
 
-    const { loginWithGoogle, request } = useGoogleLogin();
+    const { loginWithGoogle } = useGoogleLogin();
 
     const loginGoogle = async () => {
         const t = await loginWithGoogle();
         await saveToken(t);
         setToken(t);
+        await loadUser(t);
     };
 
     const loginApple = async () => {
         const t = await loginWithApple();
         await saveToken(t);
         setToken(t);
+        await loadUser(t);
     };
 
     const reloadUser = async () => {

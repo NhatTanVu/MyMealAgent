@@ -128,7 +128,6 @@ export default function LoginScreen() {
                 {/* Google */}
                 <Pressable
                     onPress={onGoogle}
-                    disabled={true}
                     style={{
                         borderWidth: 1,
                         padding: 14,
@@ -137,7 +136,7 @@ export default function LoginScreen() {
                         alignItems: "center",
                     }}
                 >
-                    <ThemedText style={{ fontWeight: "500" }}>Continue with Google (disabled)</ThemedText>
+                    <ThemedText style={{ fontWeight: "500" }}>Continue with Google</ThemedText>
                 </Pressable>
 
                 <Link href="/register" style={{ marginTop: 16, fontSize: 16 }}>
